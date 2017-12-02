@@ -27,7 +27,7 @@
               {{channel[1]}}
             </div>
           </div>
-          <div class="col-8" style="height:100%;overflow-y:scroll">
+          <div class="col-8" style="height:100%;overflow-y:scroll" id="chatbox">
             <div ng-repeat="message in chat.messages[chat.activechannel]">
               {{"[" + message.timestamp + "] " + message.user + ": " + message.message}}
             </div>
