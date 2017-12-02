@@ -36,6 +36,11 @@ function ChatCtrl($scope) {
   };
   chat.addMessage = function(message) {
     chat.messages[message.channel].push(message);
+	if(message.channel == chat.activechannel) {
+		$scope.$apply();
+		var elem = document.getElementById("chatbox");
+		elem.scrollTop = elem.scrollHeight;
+	}
   }
   chat.update = function() {
     $scope.$apply();
