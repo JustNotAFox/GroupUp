@@ -55,6 +55,22 @@ function ChatCtrl($scope) {
     chat.online = false;
   }
 };
+  chat.inviteUser = function() {
+	com = {};
+	com.command = "invite";
+	com.user = user id from the users list;
+	com.channel= activechannel;
+	socket.send(JSON.stringify(com));
+	
+	}
+  chat.banUser = function() {
+	com = {};
+	com.command = "ban";
+	com.User = user id from users list;
+	com.channel = activechannel;
+	socket.send(JSON.stringify(com));
+	}
+	
 onmessage = function (event) {
   var com = JSON.parse(event.data);
   switch(com.command) {
