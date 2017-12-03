@@ -32,6 +32,18 @@
               {{"[" + message.timestamp + "] " + message.user + ": " + message.message}}
             </div>
           </div>
+			<div class="col-2" style="height:90%" id="usersBox">
+				<h5>Admins</h5>
+				<h5>Members</h5>
+				<h5>Invited</h5>
+				<h5>Banned</h5>
+				<form class="form-group col">
+				<input class="col-2 form-control" ng-model="chat.message" />
+				<button type="submit" ng-click="chat.inviteUser()" class="btn btn-primary col-2">Invite User</button>
+				<button type="submit" ng-click="chat.banUser()" class="btn btn-primary col-2">Ban User</button>
+				</form>
+				
+			</div>
         </div>
 		<div class="row" style="height:10%">
 			<div class="col-2" style="height:100%">
