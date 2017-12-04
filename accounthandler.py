@@ -26,3 +26,33 @@ def getchannels(uid):
 	cursor = db.cursor()
 	cursor.execute("CALL getchannels(%s)", (uid))
 	return cursor.fetchall()
+
+def getchannelname(cid):
+	cursor = db.cursor()
+	cursor.execute("select name from Groupchannel where id = %s;", (cid))
+	return cursor.fetchone()
+
+def ban(uid, cmd):
+	cursor = db.cursor()
+	cursor.execute("CALL ban(%s,%s,%s)", (uid, cmd["uid"], cmd["cid"]))
+	return cursor.fetchone()
+
+def invite(uid, cmd):
+	cursor = db.cursor()
+	cursor.execute("CALL invite(%s,%s,%s)",(uid,cmd["uid"],cmd["cid"]))
+	return cursor.fetchone()
+
+def create(uid,cmd):
+	cursor = db.cursor()
+	cursor.execute("CALL createchannel(%s,%s,%s)",(uid,cmd["name"],cmd["private"]))
+	return cursor.fetchone()
+
+def join(uid,cmd):
+	cursor = db.cursor()
+	cursor.execute("CALL joinchannel(%s,%s)",(uid,cmd["cid"]))
+	return cursor.fetchone()
+
+def passwd(uid,cmd):
+	cursor = db.cursor()
+	cursor.execute("CALL passwd(%s,%s,%s)",(uid,cmd["oldpass"],cmd["newpass"]))
+	return cursor.fetchone()
