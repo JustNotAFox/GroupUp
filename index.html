@@ -23,7 +23,7 @@
       <div ng-show="chat.online" class="container-fluid">
         <div class="row" style="height:90%">
           <div class="col-2">
-            <div ng-repeat="channel in chat.channels" ng-class="(chat.activechannel != channel[0] || chat.settings) ? 'btn-outline-primary' : 'btn-primary'" ng-click="chat.activechannel = channel[0]; chat.settings = false" class="btn btn-block">
+            <div ng-repeat="channel in chat.channels | channelsin" ng-class="(chat.activechannel != channel[0] || chat.settings) ? 'btn-outline-primary' : 'btn-primary'" ng-click="chat.activechannel = channel[0]; chat.settings = false" class="btn btn-block">
               {{channel[1]}}
             </div>
           </div>
@@ -36,7 +36,8 @@
 			</div>
 		  <div ng-show="chat.settings">
 		  <form>
-			<input ng-model="chat.createchannel" />
+			<input ng-model="chat.newchannel" />
+			Private <input type="checkbox" ng-model="chat.private" ng-true-value="1" ng-false-value="0">
 			<button type="submit" ng-click="chat.createChannel()" class="btn btn-primary col-2">Create Channel</button>
 			</form>
 		  
@@ -44,35 +45,39 @@
 		  
           </div>
 		  
-          <div class="col-2" style="height:90%" id="usersBox">
-			<div style="height:70%;overflow-y:scroll">
-            <h5>Admins</h5>
-            <div ng-repeat="user in chat.users[chat.activechannel] | admins" >{{user.name}}</div>
-            <h5>Members</h5>
-					<div ng-repeat="user in chat.users[chat.activechannel] | members" >{{user.name}}</div>
-				<h5>Invited</h5>
-					<div ng-repeat="user in chat.users[chat.activechannel] | invitedUsers" >{{user.name}}</div>
-				<h5>Banned</h5>
-					<div ng-repeat="user in chat.users[chat.activechannel] | bannedUsers" >{{user.name}}</div>
-			</div>		
-				<div class="row" style="height:1%"></div>	
-				<div class="row" style="height:4%"> 
-				<input ng-model="chat.message" />
-				</div>
-				<div class="row" style="height:1%"></div>
-				<div class="row"style="height:4%">
-				<button type="submit" ng-click="chat.inviteUser()" class="btn btn-primary ">Invite User</button>
-				</div>
-				<div class="row" style="height:1%"></div>
-				<div class="row" style="height:4%">
-				<button type="submit" ng-click="chat.banUser()" class="btn btn-primary ">Ban User</button>
-				</div>
-				
-			</div>
+          <div class="col-2" id="usersBox">
+		     <div ng-hide="chat.settings">
+			 <div style="height:80%;overflow-y:scroll">
+             <h5>Admins</h5>
+             <div ng-repeat="user in chat.users[chat.activechannel] | admins" >{{user.name}}</div>
+             <h5>Members</h5>
+             <div ng-repeat="user in chat.users[chat.activechannel] | members" >{{user.name}}</div>
+             <h5>Invited</h5>
+             <div ng-repeat="user in chat.users[chat.activechannel] | invitedUsers" >{{user.name}}</div>
+             <h5>Banned</h5>
+             <div ng-repeat="user in chat.users[chat.activechannel] | bannedUsers" >{{user.name}}</div>
+           </div>		
+           <div style="height:20%" ng-show="chat.isAdmin()"> 
+             <input ng-model="chat.invbanname" class="form-control" />
+		     <button ng-click="chat.inviteUser()" class="btn btn-primary ">Invite User</button>
+             <button ng-click="chat.banUser()" class="btn btn-danger ">Ban User</button>
+           </div>
+		   </div>
+		   <div ng-show="chat.settings" style="height:100%;overflow-y:scroll">
+             <h5>Invited</h5>
+            <div ng-repeat="channel in chat.channels | invited" ng-click="chat.joinchannel(channel[0])" class="btn btn-outline-primary btn-block">
+              {{channel[1]}}
+            </div>
+             <h5>Public</h5>
+            <div ng-repeat="channel in chat.channels | public" ng-click="chat.joinchannel(channel[0])" class="btn btn-block btn-outline-primary">
+              {{channel[1]}}
+            </div>
+		   </div>
+         </div>
         </div>
 		<div class="row" style="height:10%">
 			<div class="col-2" style="height:100%">
-				<button class="btn" ng-class="chat.settings ? 'btn-danger' : 'btn-outline-danger'" ng-click="chat.settingsChanged()">Settings</button>
+				<button class="btn" ng-class="chat.settings ? 'btn-danger' : 'btn-outline-danger'" ng-click="chat.settings = true">Settings</button>
 			</div>
 			<div class="col-8" style="height:100%" >
 	    <form class="form-group row">
