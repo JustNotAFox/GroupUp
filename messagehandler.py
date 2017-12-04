@@ -20,4 +20,5 @@ def initchannel(channel):
 	cursor = db.cursor()
 	cursor.execute("CALL getmessage(%s)", (channel))
 	tmp = cursor.fetchall()
-	return {"command": "channel", "channel": channel, "messages": [{"id": a[0], "channel": a[1], "message": a[2], "user": a[3], "timestamp": str(a[4])} for a in tmp]}
+	cursor.execute("CALL getusers(%s)",(channel))
+	return {"command": "channel", "channel": channel, "messages": [{"id": a[0], "channel": a[1], "message": a[2], "user": a[3], "timestamp": str(a[4])} for a in tmp], "users": [{"id": a[0], "name": a[1], "role": a[2]} for a in cursor.fetchall()]}
