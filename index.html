@@ -35,8 +35,12 @@
             </div>
 			</div>
 		  <div ng-show="chat.settings">
-			
-		  </div>
+		  <form>
+			<input ng-model="chat.createChannel" />
+			<button type="submit" ng-click="chat.createChannel()" class="btn btn-primary col-2">Create Channel</button>
+			</form>
+		  
+          </div>
 		  
           </div>
 		  
