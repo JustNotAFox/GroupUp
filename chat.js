@@ -17,6 +17,7 @@ function ChatCtrl($scope) {
   chat.message;
   chat.pass;
   chat.error;
+  chat.private = 0;
   chat.online = false;
   chat.login = function() {
     com = {};
@@ -63,26 +64,51 @@ function ChatCtrl($scope) {
   chat.inviteUser = function() {
     com = {};
     com.command = "invite";
-    //com.user = user id from the users list;
-    com.channel= activechannel;
+    t = chat.users[chat.activechannel].find(function(t) { return t.name == chat.invbanname; })
+	if(!t) {
+		t = chat.users[1].find(function(t) { return t.name == chat.invbanname; })
+	}
+	if(!t) {
+		return;
+	}
+    com.uid = t.id;
+    com.cid = chat.activechannel;
     socket.send(JSON.stringify(com));
   };
   chat.banUser = function() {
     com = {};
     com.command = "ban";
-    //com.User = user id from users list;
-    com.channel = activechannel;
+    t = chat.users[chat.activechannel].find(function(t) { return t.name == chat.invbanname; })
+	if(!t) {
+		t = chat.users[1].find(function(t) { return t.name == chat.invbanname; })
+	}
+	if(!t) {
+		return;
+	}
+    com.uid = t.id;
+    com.cid = chat.activechannel;
     socket.send(JSON.stringify(com));
   };
-  chat.settingsChanged = function(){
-	chat.settings=true;
-	$scope.$apply();  
+  chat.createChannel = function(){
+    com = {};
+    com.command = "create";
+    com.name = chat.newchannel;
+    com.private = chat.private;
+    socket.send(JSON.stringify(com));
   };
-  chat.createChannel = function(createchannel){
-	chat.channels[createchannel.channel].push(createchannel);
-	com.channel = activechannel;
-	$scope.$apply();
-  };
+  chat.joinchannel = function(cid) {
+     com = {};
+	 com.command = "join"
+	 com.cid = cid;
+	 socket.send(JSON.stringify(com));
+  }
+  chat.isAdmin = function() {
+    t = chat.users[chat.activechannel].find(function(t) { return t.id == chat.uid; })
+    if(t.role == 3) {
+      return true;
+    }
+    return false;
+  }
 }
 
 
@@ -134,6 +160,42 @@ myApp.filter('bannedUsers',function(){
     return out;
   }
 });
+myApp.filter('channelsin',function(){
+  return function(input)
+  {
+    var out = [];
+    angular.forEach(input,function(ch){
+      if(ch[2] > 1){
+        out.push(ch)
+      }
+    })
+    return out;
+  }
+});
+myApp.filter('invited',function(){
+  return function(input)
+  {
+    var out = [];
+    angular.forEach(input,function(ch){
+      if(ch[2] == 1){
+        out.push(ch)
+      }
+    })
+    return out;
+  }
+});
+myApp.filter('public',function(){
+  return function(input)
+  {
+    var out = [];
+    angular.forEach(input,function(ch){
+      if(!ch[2]){
+        out.push(ch)
+      }
+    })
+    return out;
+  }
+});
 
 onmessage = function (event) {
   var com = JSON.parse(event.data);
@@ -151,6 +213,7 @@ onmessage = function (event) {
       chat.channels = com.channels;
       chat.online = true;
       chat.error = "";
+      chat.uid = com.uid;
       break;
 
     case "channel":
@@ -164,6 +227,75 @@ onmessage = function (event) {
 	case "createchannel":
 		chat.createChannel(com.createchannel);
 		break;
+
+    case "banned":
+      if(com.uid == chat.uid) {
+        chat.messages.splice(com.channel);
+        chat.users.splice(com.channel);
+		i = chat.channels.findIndex(function(t) { return t.id == com.uid; });
+		chat.channels.splice(i);
+      }
+      else {
+        i = chat.users[com.channel].find(function(t) { return t.id == com.uid; });
+        i.role = 0;
+      }
+      chat.update();
+      break;
+
+    case "invited":
+      if(com.uid == chat.uid) {
+		t = chat.channels.find(function(t) { return t.id == com.uid; });
+		if (!t) {
+			chat.channels.push([com.channel,com.name,1])
+		}
+		else {
+			t[2] = 1;
+		}
+      }
+      else {
+        i = chat.users[com.channel].find(function(t) { return t.id == com.uid; });
+        if(i) {
+          i.role = 1;
+        }
+        else {
+          i = chat.users[1].find(function(t) { return t.id == com.uid; });
+          t = {};
+          t.id = i.id;
+          t.name = i.name;
+          t.role = 1;
+          chat.users[com.channel].push(t);
+        }
+      }
+      chat.update();
+      break;
+
+    case "joined":
+	  if(chat.uid != com.uid) {
+		  i = chat.users[com.channel].find(function(t) { return t.id == com.uid; });
+	  if(i) {
+        i.role = 2;
+      }
+      else {
+          i = chat.users[1].find(function(t) { return t.id == com.uid; });
+          t = {};
+          t.id = i.id;
+          t.name = i.name;
+          t.role = 2;
+          chat.users[com.channel].push(t);
+	  }
+	  }
+	  else {
+		  i = chat.channels.find(function(t) { return t[0] == com.channel; });
+		  i[2] = 2;
+	  }
+	  break;
+	  
+	  case "newchannel":
+	  if(chat.uid == com.uid) {
+		  com.channel[2] = 3;
+	  }
+		  chat.channels.push(com.channel)
+  break;
   }
   chat.update();
 }
