@@ -8,6 +8,10 @@ function ChatCtrl($scope) {
   chat.channels = [];
   chat.activechannel = 1;
   chat.user;
+  chat.admins = [];
+  chat.members = [];
+  chat.invitedUsers = [];
+  chat.bannedUsers = [];
   chat.message;
   chat.pass;
   chat.error;
@@ -71,6 +75,64 @@ function ChatCtrl($scope) {
 	socket.send(JSON.stringify(com));
 	}
 	
+myApp.filter('admins',funtion(){
+	return function(input)
+	{
+		var out = [];
+		
+		angular.forEach(input,function(user){
+			if(user.role === '3'){
+				out.push(user)
+			}
+		})
+		return out;
+	}
+
+});
+
+myApp.filter('members',funtion(){
+	return function(input)
+	{
+		var out = [];
+		
+		angular.forEach(input,function(user){
+			if(user.role === '2'){
+				out.push(user)
+			}
+		})
+		return out;
+	}
+
+});
+myApp.filter('invitedUsers',funtion(){
+	return function(input)
+	{
+		var out = [];
+		
+		angular.forEach(input,function(user){
+			if(user.role === '1'){
+				out.push(user)
+			}
+		})
+		return out;
+	}
+
+});
+myApp.filter('bannedUsers',funtion(){
+	return function(input)
+	{
+		var out = [];
+		
+		angular.forEach(input,function(user){
+			if(user.role === '0'){
+				out.push(user)
+			}
+		})
+		return out;
+	}
+
+});
+
 onmessage = function (event) {
   var com = JSON.parse(event.data);
   switch(com.command) {
@@ -91,7 +153,10 @@ onmessage = function (event) {
 
     case "channel":
       chat.messages[com.channel] = com.messages;
+	  chat.users[com.channel] = com.users;
       break;
+		
+	
   }	
   chat.update();
 }
