@@ -34,9 +34,13 @@
           </div>
 			<div class="col-2" style="height:90%" id="usersBox">
 				<h5>Admins</h5>
+					<div ng-repeat="user in users | admins" >{{user[0]}}}}</div>
 				<h5>Members</h5>
+					<div ng-repeat="user in users | members" >{{user[0]}}}}</div>
 				<h5>Invited</h5>
+					<div ng-repeat="user in users | invitedUsers" >{{user[0]}}}}</div>
 				<h5>Banned</h5>
+					<div ng-repeat="user in users | bannedUsers" >{{user[0]}}}}</div>
 				<form class="form-group col">
 				<input class="col-2 form-control" ng-model="chat.message" />
 				<button type="submit" ng-click="chat.inviteUser()" class="btn btn-primary col-2">Invite User</button>
