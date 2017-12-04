@@ -78,10 +78,10 @@ function ChatCtrl($scope) {
 	chat.settings=true;
 	$scope.$apply();  
   };
-  chat.createChannel = function(){
-	com = {};
-	com.command = "createChannel"
-	socket.send(JSON.stringify(com));
+  chat.createChannel = function(createchannel){
+	chat.channels[createchannel.channel].push(createchannel);
+	com.channel = activechannel;
+	$scope.$apply();
   };
 }
 
@@ -161,9 +161,9 @@ onmessage = function (event) {
 	case "settings":
 		chat.settingsChanged();
 		break;
-	case "createChannel":
-		chat.channel[com.channel] = com.messages;
-		chat.users[com.channel] = com.users;
+	case "createchannel":
+		chat.createChannel(com.createchannel);
+		break;
   }
   chat.update();
 }
