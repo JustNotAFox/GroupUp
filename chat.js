@@ -13,6 +13,7 @@ function ChatCtrl($scope) {
   chat.members = [];
   chat.invitedUsers = [];
   chat.bannedUsers = [];
+  chat.settings = false;
   chat.message;
   chat.pass;
   chat.error;
@@ -72,6 +73,10 @@ function ChatCtrl($scope) {
     //com.User = user id from users list;
     com.channel = activechannel;
     socket.send(JSON.stringify(com));
+  };
+  chat.settingsChanged = function(){
+	chat.settings=true;
+	$scope.$apply();  
   };
 }
 
@@ -147,6 +152,10 @@ onmessage = function (event) {
       chat.messages[com.channel] = com.messages;
       chat.users[com.channel] = com.users;
       break;
+	  
+	 case "settings":
+		chat.settingsChanged();
+		break;
   }
   chat.update();
 }
