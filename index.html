@@ -27,6 +27,7 @@
               {{channel[1]}}
             </div>
           </div>
+		  
           <div class="col-8" style="height:100%;overflow-y:scroll" id="chatbox">
             <div ng-repeat="message in chat.messages[chat.activechannel]">
               {{"[" + message.timestamp + "] " + message.user + ": " + message.message}}
@@ -61,7 +62,7 @@
         </div>
 		<div class="row" style="height:10%">
 			<div class="col-2" style="height:100%">
-				<button class="btn btn-danger">Settings</button>
+				<button class="btn btn-danger" ng-click="chat.settingsChanged()">Settings</button>
 			</div>
 			<div class="col-8" style="height:100%" >
 	    <form class="form-group row">
