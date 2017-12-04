@@ -8,6 +8,7 @@ function ChatCtrl($scope) {
   chat.channels = [];
   chat.activechannel = 1;
   chat.user;
+  chat.users = [];
   chat.admins = [];
   chat.members = [];
   chat.invitedUsers = [];
@@ -22,14 +23,14 @@ function ChatCtrl($scope) {
     com.user = chat.user;
     com.password = chat.pass;
     socket.send(JSON.stringify(com));
-  }
+  };
   chat.register = function() {
     com = {};
     com.command = "register";
     com.user = chat.user;
     com.password = chat.pass;
     socket.send(JSON.stringify(com));
-  }
+  };
   chat.sendMessage = function() {
     com = {};
     com.command = "message";
@@ -40,15 +41,15 @@ function ChatCtrl($scope) {
   };
   chat.addMessage = function(message) {
     chat.messages[message.channel].push(message);
-	if(message.channel == chat.activechannel) {
-		$scope.$apply();
-		var elem = document.getElementById("chatbox");
-		elem.scrollTop = elem.scrollHeight;
-	}
-  }
+    if(message.channel == chat.activechannel) {
+      $scope.$apply();
+      var elem = document.getElementById("chatbox");
+      elem.scrollTop = elem.scrollHeight;
+    }
+  };
   chat.update = function() {
     $scope.$apply();
-  }
+  };
   chat.logout = function() {
     socket.send("");
     socket.close();
@@ -57,80 +58,71 @@ function ChatCtrl($scope) {
     chat.user = "";
     chat.pass = "";
     chat.online = false;
-  }
-};
+  };
   chat.inviteUser = function() {
-	com = {};
-	com.command = "invite";
-	com.user = user id from the users list;
-	com.channel= activechannel;
-	socket.send(JSON.stringify(com));
-	
-	}
+    com = {};
+    com.command = "invite";
+    //com.user = user id from the users list;
+    com.channel= activechannel;
+    socket.send(JSON.stringify(com));
+  };
   chat.banUser = function() {
-	com = {};
-	com.command = "ban";
-	com.User = user id from users list;
-	com.channel = activechannel;
-	socket.send(JSON.stringify(com));
-	}
-	
-myApp.filter('admins',funtion(){
-	return function(input)
-	{
-		var out = [];
-		
-		angular.forEach(input,function(user){
-			if(user.role === '3'){
-				out.push(user)
-			}
-		})
-		return out;
-	}
+    com = {};
+    com.command = "ban";
+    //com.User = user id from users list;
+    com.channel = activechannel;
+    socket.send(JSON.stringify(com));
+  };
+}
 
+
+myApp.filter('admins',function(){
+  return function(input)
+  {
+    var out = [];
+      angular.forEach(input,function(user){
+        if(user.role == 3){
+          out.push(user)
+        }
+      })
+    return out;
+  }
 });
-
-myApp.filter('members',funtion(){
-	return function(input)
-	{
-		var out = [];
-		
-		angular.forEach(input,function(user){
-			if(user.role === '2'){
-				out.push(user)
-			}
-		})
-		return out;
-	}
-
+myApp.filter('members',function(){
+  return function(input)
+  {
+    var out = [];
+    angular.forEach(input,function(user){
+      if(user.role == 2){
+        out.push(user)
+      }
+    })
+    return out;
+  }
 });
-myApp.filter('invitedUsers',funtion(){
-	return function(input)
-	{
-		var out = [];
-		
-		angular.forEach(input,function(user){
-			if(user.role === '1'){
-				out.push(user)
-			}
-		})
-		return out;
-	}
-
+myApp.filter('invitedUsers',function(){
+  return function(input)
+  {
+    var out = [];
+    angular.forEach(input,function(user){
+      if(user.role == 1){
+        out.push(user)
+      }
+    })
+    return out;
+  }
 });
-myApp.filter('bannedUsers',funtion(){
-	return function(input)
-	{
-		var out = [];
-		
-		angular.forEach(input,function(user){
-			if(user.role === '0'){
-				out.push(user)
-			}
-		})
-		return out;
-	}
-
+myApp.filter('bannedUsers',function(){
+  return function(input)
+  {
+    var out = [];
+    angular.forEach(input,function(user){
+      if(user.role == 0){
+        out.push(user)
+      }
+    })
+    return out;
+  }
 });
 
 onmessage = function (event) {
@@ -153,11 +145,9 @@ onmessage = function (event) {
 
     case "channel":
       chat.messages[com.channel] = com.messages;
-	  chat.users[com.channel] = com.users;
+      chat.users[com.channel] = com.users;
       break;
-		
-	
-  }	
+  }
   chat.update();
 }
 socket.onmessage = onmessage;
